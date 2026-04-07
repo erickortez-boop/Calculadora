@@ -1,78 +1,136 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Lex Bufete - Calculadora Inmobiliaria</title>
+    <title>Lex Bufete - Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .bg-legal { background-color: #1a2a3a; } /* Azul notarial serio */
-        input focus { border-color: #1a2a3a !important; }
+        .bg-legal { background-color: #1a2a3a; }
+        .text-accent { color: #d4af37; } /* Dorado elegante para resaltar totales */
+        input:focus { border-color: #1a2a3a !important; outline: none; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
+<body class="bg-slate-50 min-h-screen font-sans">
 
-    <div class="max-w-md mx-auto min-h-screen flex flex-col">
-        <header class="bg-legal text-white p-6 shadow-lg text-center">
-            <h1 class="text-xl font-bold tracking-widest uppercase">Lex Bufete</h1>
-            <p class="text-xs opacity-80 mt-1">Cálculo de Aranceles e Impuestos CNR</p>
+    <div class="max-w-md mx-auto min-h-screen flex flex-col shadow-2xl bg-white">
+        <header class="bg-legal text-white p-6 text-center shadow-md">
+            <h1 class="text-2xl font-bold tracking-widest uppercase">Lex Bufete</h1>
+            <p class="text-[10px] opacity-70 mt-1 uppercase tracking-tighter">Servicios Jurídicos y Notariales</p>
         </header>
 
-        <main class="p-6 flex-grow">
-            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
-                <label class="block text-sm font-semibold text-gray-600 uppercase mb-2">Valor de la Escritura ($)</label>
-                <input type="number" id="monto" inputmode="decimal" placeholder="Ej: 50000" 
-                    class="w-full text-3xl font-light p-4 bg-gray-50 border-b-4 border-gray-200 focus:border-blue-900 focus:outline-none transition-all mb-6">
+        <main class="p-5 space-y-6 flex-grow">
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">Monto del Contrato / Venta ($)</label>
+                    <input type="number" id="monto" inputmode="decimal" placeholder="0.00" 
+                        class="w-full text-3xl font-light p-3 bg-gray-50 border-b-2 border-gray-200 focus:border-blue-900 transition-all">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-400 uppercase mb-1">% Honorarios Profesionales</label>
+                    <input type="number" id="porcentajeHono" inputmode="decimal" value="1" 
+                        class="w-full text-xl font-light p-3 bg-gray-50 border-b-2 border-gray-100 focus:border-blue-900 transition-all">
+                </div>
 
                 <button onclick="calcular()" 
-                    class="w-full bg-blue-900 hover:bg-black text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-wider">
-                    Calcular Trámite
+                    class="w-full bg-blue-900 hover:bg-black text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all uppercase text-sm">
+                    Generar Cotización
                 </button>
             </div>
 
-            <div id="resultados" class="mt-6 bg-white rounded-2xl p-6 shadow-inner border-l-4 border-blue-900 hidden">
-                <div class="space-y-4 text-sm">
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-500 uppercase font-medium text-xs">Impuesto Transferencia (3%)</span>
-                        <span id="impuesto" class="text-gray-900 font-bold text-base">$0.00</span>
+            <div id="resultados" class="hidden animate-fade-in space-y-4">
+                <div class="bg-gray-50 rounded-2xl p-5 border border-gray-100 space-y-3">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500 font-medium">Impuesto Transferencia (3%):</span>
+                        <span id="impuesto" class="text-gray-900 font-bold">$0.00</span>
                     </div>
-                    <div class="flex justify-between items-center">
-                        <span class="text-gray-500 uppercase font-medium text-xs">Aranceles de Registro</span>
-                        <span id="arancel" class="text-gray-900 font-bold text-base">$0.00</span>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500 font-medium">Aranceles CNR (Registro):</span>
+                        <span id="arancel" class="text-gray-900 font-bold">$0.00</span>
                     </div>
-                    <hr class="border-dashed">
-                    <div class="flex justify-between items-center pt-2">
-                        <span class="text-blue-900 font-black uppercase text-sm">Total Estimado</span>
+                    <div class="flex justify-between text-sm">
+                        <span class="text-gray-500 font-medium font-semibold text-blue-800">Honorarios Lex Bufete:</span>
+                        <span id="honorarios" class="text-blue-800 font-bold">$0.00</span>
+                    </div>
+                    <hr class="border-dashed border-gray-300">
+                    <div class="flex justify-between items-center">
+                        <span class="font-black text-gray-800 uppercase text-xs">Total Inversión</span>
                         <span id="total" class="text-2xl font-black text-blue-900">$0.00</span>
                     </div>
                 </div>
+
+                <button onclick="compartir()" 
+                    class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-md transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                    Compartir con Cliente
+                </button>
             </div>
         </main>
 
-        <footer class="p-4 text-center text-[10px] text-gray-400">
-            Base legal: Art. 4 Ley de Impuesto sobre Transferencia de Bienes Raíces <br> 
-            y Aranceles del Registro de la Propiedad Raíz e Hipotecas.
+        <footer class="p-6 text-center">
+            <p class="text-[9px] text-gray-400 leading-tight">
+                * Valores estimados según Art. 4 Ley de Impuesto sobre Transferencia y Aranceles del Registro de la Propiedad Raíz e Hipotecas.
+            </p>
         </footer>
     </div>
 
     <script>
+        let datosGlobales = {};
+
         function calcular() {
             const monto = parseFloat(document.getElementById('monto').value);
+            const porcHono = parseFloat(document.getElementById('porcentajeHono').value) || 0;
+            
             if (!monto || monto <= 0) return;
 
-            // Impuesto Transferencia (3% sobre excedente de $28,571.43)
+            // Lógica Legal El Salvador
             let imp = monto > 28571.43 ? (monto - 28571.43) * 0.03 : 0;
-            
-            // Arancel CNR ($0.63 por cada $100 o fracción)
             let aran = Math.ceil(monto / 100) * 0.63;
+            let hono = monto * (porcHono / 100);
+            let total = imp + aran + hono;
 
             const fmt = (v) => v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 
+            // Actualizar Interfaz
             document.getElementById('impuesto').innerText = `$${fmt(imp)}`;
             document.getElementById('arancel').innerText = `$${fmt(aran)}`;
-            document.getElementById('total').innerText = `$${fmt(imp + aran)}`;
+            document.getElementById('honorarios').innerText = `$${fmt(hono)}`;
+            document.getElementById('total').innerText = `$${fmt(total)}`;
             
             document.getElementById('resultados').classList.remove('hidden');
+
+            // Guardar para compartir
+            datosGlobales = { monto, imp, aran, hono, total };
+        }
+
+        async function compartir() {
+            const fmt = (v) => v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+            
+            const texto = `📜 *Cotización Lex Bufete*\n\n` +
+                          `• *Valor Inmueble:* $${fmt(datosGlobales.monto)}\n` +
+                          `--------------------------\n` +
+                          `• *Impuesto Transf. (3%):* $${fmt(datosGlobales.imp)}\n` +
+                          `• *Aranceles CNR:* $${fmt(datosGlobales.aran)}\n` +
+                          `• *Honorarios Notariales:* $${fmt(datosGlobales.hono)}\n` +
+                          `--------------------------\n` +
+                          `✅ *TOTAL ESTIMADO:* $${fmt(datosGlobales.total)}\n\n` +
+                          `_Presupuesto sujeto a verificación registral._`;
+
+            if (navigator.share) {
+                try {
+                    await navigator.share({
+                        title: 'Presupuesto Legal - Lex Bufete',
+                        text: texto
+                    });
+                } catch (err) { console.log("Error al compartir"); }
+            } else {
+                // Fallback para navegadores antiguos
+                window.open(`https://wa.me/?text=${encodeURIComponent(texto)}`, '_blank');
+            }
         }
     </script>
 </body>
