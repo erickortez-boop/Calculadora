@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Lex Bufete - Calculadora Inmobiliaria</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-legal { background-color: #1a2a3a; } /* Azul notarial serio */
+        input focus { border-color: #1a2a3a !important; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+
+    <div class="max-w-md mx-auto min-h-screen flex flex-col">
+        <header class="bg-legal text-white p-6 shadow-lg text-center">
+            <h1 class="text-xl font-bold tracking-widest uppercase">Lex Bufete</h1>
+            <p class="text-xs opacity-80 mt-1">Cálculo de Aranceles e Impuestos CNR</p>
+        </header>
+
+        <main class="p-6 flex-grow">
+            <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-200">
+                <label class="block text-sm font-semibold text-gray-600 uppercase mb-2">Valor de la Escritura ($)</label>
+                <input type="number" id="monto" inputmode="decimal" placeholder="Ej: 50000" 
+                    class="w-full text-3xl font-light p-4 bg-gray-50 border-b-4 border-gray-200 focus:border-blue-900 focus:outline-none transition-all mb-6">
+
+                <button onclick="calcular()" 
+                    class="w-full bg-blue-900 hover:bg-black text-white font-bold py-4 rounded-xl shadow-lg active:scale-95 transition-all uppercase tracking-wider">
+                    Calcular Trámite
+                </button>
+            </div>
+
+            <div id="resultados" class="mt-6 bg-white rounded-2xl p-6 shadow-inner border-l-4 border-blue-900 hidden">
+                <div class="space-y-4 text-sm">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-500 uppercase font-medium text-xs">Impuesto Transferencia (3%)</span>
+                        <span id="impuesto" class="text-gray-900 font-bold text-base">$0.00</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-500 uppercase font-medium text-xs">Aranceles de Registro</span>
+                        <span id="arancel" class="text-gray-900 font-bold text-base">$0.00</span>
+                    </div>
+                    <hr class="border-dashed">
+                    <div class="flex justify-between items-center pt-2">
+                        <span class="text-blue-900 font-black uppercase text-sm">Total Estimado</span>
+                        <span id="total" class="text-2xl font-black text-blue-900">$0.00</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="p-4 text-center text-[10px] text-gray-400">
+            Base legal: Art. 4 Ley de Impuesto sobre Transferencia de Bienes Raíces <br> 
+            y Aranceles del Registro de la Propiedad Raíz e Hipotecas.
+        </footer>
+    </div>
+
+    <script>
+        function calcular() {
+            const monto = parseFloat(document.getElementById('monto').value);
+            if (!monto || monto <= 0) return;
+
+            // Impuesto Transferencia (3% sobre excedente de $28,571.43)
+            let imp = monto > 28571.43 ? (monto - 28571.43) * 0.03 : 0;
+            
+            // Arancel CNR ($0.63 por cada $100 o fracción)
+            let aran = Math.ceil(monto / 100) * 0.63;
+
+            const fmt = (v) => v.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+
+            document.getElementById('impuesto').innerText = `$${fmt(imp)}`;
+            document.getElementById('arancel').innerText = `$${fmt(aran)}`;
+            document.getElementById('total').innerText = `$${fmt(imp + aran)}`;
+            
+            document.getElementById('resultados').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
